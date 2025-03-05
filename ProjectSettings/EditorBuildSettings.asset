@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/Main.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Scenes/PathFinding_Updated_Coin.unity
+    guid: 1569c04d1e9a2d6468bc13eda5dc8894
+  - enabled: 0
+    path: Assets/Scenes/Pathfinding_Updated_Version2.unity
+    guid: 69ca2a13ec2b1384b963781dde08f862
+  - enabled: 0
+    path: Assets/Scenes/ai-play_pathfinding_time_metrics.unity
+    guid: 94559851d9c9ff04a841d1dd262d55ae
+  - enabled: 1
+    path: Assets/Scenes/ai-play_pathfinding_competitive.unity
+    guid: 702413ec71a787b49a655ef3d2b8c2c8
+  m_configObjects: {}
