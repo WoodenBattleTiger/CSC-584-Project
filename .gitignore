@@ -10,3 +10,4 @@ Library/ArtifactDB
 Library/SourceAssetDB
 Library/ScriptAssemblies/Assembly-CSharp.pdb
 Library/ScriptAssemblies/Assembly-CSharp.dll
+/[Ll]ibrary/ 
