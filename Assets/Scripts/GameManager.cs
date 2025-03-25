@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public enum Algorithm { BFS, DFS, Astar, None };
     List<string> dropOptions = new List<string> { "Choose an Algorithm", "Breadth First Search", "Depth First Search", "A* Search" };
 
+    public RBAgent rbAgent;
 
     //player data
     public Algorithm[] selectedAlgos = { Algorithm.None, Algorithm.None }; //player's algorithms

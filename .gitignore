@@ -1,0 +1,9 @@
+/.vs
+/Library
+/Library
+/Library
+*.sln
+Library/ArtifactDB
+/obj
+Library/StateCache/SceneView/b9e9fb-mainStage.json
+Assembly-CSharp.csproj
