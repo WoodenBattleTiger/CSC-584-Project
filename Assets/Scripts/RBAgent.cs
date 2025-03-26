@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using PathFinding;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -34,5 +35,15 @@ public class RBAgent : MonoBehaviour
                 return Algorithm.BFS; //else choose BFS
             }
         }
+    }
+
+    public void PlaceObstacle()
+    {
+        //place an obstacle tile
+    }
+
+    public void PlaceBoost()
+    {
+        //place an obstacle tile
     }
 }
