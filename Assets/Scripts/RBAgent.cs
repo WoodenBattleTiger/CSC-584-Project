@@ -8,7 +8,7 @@ using static GameManager;
 public class RBAgent : MonoBehaviour
 {
 
-    int player = 2; //is the agent player 1 or player 2
+    public int player = 2; //is the agent player 1 or player 2
 
     // Start is called before the first frame update
     void Start()
@@ -37,9 +37,12 @@ public class RBAgent : MonoBehaviour
         }
     }
 
-    public void PlaceObstacle()
+    public (int, int) PlaceObstacle()
     {
         //place an obstacle tile
+        (int, int) tileLocation = (-1, -1);
+
+        return tileLocation;
     }
 
     public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining)

@@ -727,6 +727,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90cdf919826651440a3e1b86bc80864e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player1: 1
+  player2: 0
   stage: 0
   rbAgent: {fileID: 1631717067}
   selectedAlgos: 0300000003000000

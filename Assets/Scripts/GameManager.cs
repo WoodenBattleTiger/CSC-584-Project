@@ -2,12 +2,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public enum PlayerType {Human, RBAgent, RLAgent };
+
+    public PlayerType player1 = PlayerType.Human;
+    public PlayerType player2 = PlayerType.Human;
 
     public int stage = 0;
 
@@ -48,7 +53,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (player1 == PlayerType.RBAgent)
+        {
+            player1DropDown.gameObject.SetActive(false); //hide player 1 drop down
+            RBAgent rb = rbAgent;
+            rb.player = 1; //mark RB as player 1
 
+            Algorithm rbAlgo = rb.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+            UnityEngine.Debug.Log(rbAlgo);
+            selectedAlgos[0] = rbAlgo;
+        }
     }
 
     public void changePlayer1Algo()
@@ -120,11 +134,11 @@ public class GameManager : MonoBehaviour
             selectedAlgos[player - 1] = Algorithm.None;
         }
 
-        Debug.Log("Selected Algos" + selectedAlgos[player - 1].ToString());
+        UnityEngine.Debug.Log("Selected Algos" + selectedAlgos[player - 1].ToString());
 
         if (selectedAlgos[0] == selectedAlgos[1])
         {
-            Debug.Log("No duplicates allowed");
+            UnityEngine.Debug.Log("No duplicates allowed");
         }
     }
 
@@ -132,7 +146,7 @@ public class GameManager : MonoBehaviour
     {
         if (stage == 0 && selectedAlgos.Contains(Algorithm.None) || selectedAlgos[1] == selectedAlgos[0])
         {
-            Debug.Log("Both players must select different algorithm to continue.");
+            UnityEngine.Debug.Log("Both players must select different algorithm to continue.");
             return;
         }
 
@@ -143,7 +157,7 @@ public class GameManager : MonoBehaviour
         }
 
         stage++;
-        Debug.Log("Stage: " + stage.ToString());
+        UnityEngine.Debug.Log("Stage: " + stage.ToString());
         updateStage(stage);
     }
 
@@ -201,17 +215,17 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgos[0])
             {
                 case Algorithm.BFS:
-                    Debug.Log("Run BFS");
+                    UnityEngine.Debug.Log("Run BFS");
                     tileGrid.runBFS = true;
                     break;
 
                 case Algorithm.DFS:
-                    Debug.Log("Run DFS");
+                    UnityEngine.Debug.Log("Run DFS");
                     tileGrid.runDFS = true;
                     break;
 
                 case Algorithm.Astar:
-                    Debug.Log("Run A*");
+                    UnityEngine.Debug.Log("Run A*");
                     tileGrid.runAStar = true;
                     break;
             }
@@ -229,17 +243,17 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgos[1])
             {
                 case Algorithm.BFS:
-                    Debug.Log("Run BFS");
+                    UnityEngine.Debug.Log("Run BFS");
                     tileGrid.runBFS = true;
                     break;
 
                 case Algorithm.DFS:
-                    Debug.Log("Run DFS");
+                    UnityEngine.Debug.Log("Run DFS");
                     tileGrid.runDFS = true;
                     break;
 
                 case Algorithm.Astar:
-                    Debug.Log("Run A*");
+                    UnityEngine.Debug.Log("Run A*");
                     tileGrid.runAStar = true;
                     break;
             }
@@ -289,7 +303,7 @@ public class GameManager : MonoBehaviour
     public void reduceTiles()
     {
         tilesRemaining[currentTurn] -= 1;
-        Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
+        UnityEngine.Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
         UpdateInfoText();
         placementsRemaining -= 1;
     }
@@ -297,7 +311,7 @@ public class GameManager : MonoBehaviour
     public void addTiles()
     {
         tilesRemaining[currentTurn] += 1;
-        Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
+        UnityEngine.Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
         UpdateInfoText();
         placementsRemaining += 1;
     }
@@ -319,7 +333,7 @@ public class GameManager : MonoBehaviour
     public void addBoostToScore()
     {
         boostsScored[currentTurn] += 1;
-        Debug.Log("Boost hit!");
+        UnityEngine.Debug.Log("Boost hit!");
         UpdateInfoText();
     }
 
