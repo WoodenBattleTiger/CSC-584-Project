@@ -1,4 +1,4 @@
-﻿using PathFinding;
+using PathFinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     List<string> dropOptions = new List<string> { "Choose an Algorithm", "Breadth First Search", "Depth First Search", "A* Search" };
 
     public RBAgent rbAgent;
+    public ReinforcementLearningAgent rlAgent; // Reference to the RLAgent
 
     //player data
     public Algorithm[] selectedAlgos = { Algorithm.None, Algorithm.None }; //player's algorithms
@@ -48,7 +49,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        // Initialize the RLAgent
+        rlAgent.Initialize();
     }
 
     public void changePlayer1Algo()
@@ -419,5 +421,6 @@ public class GameManager : MonoBehaviour
             popupText.text = "Player " + winner.ToString() + " wins!";
             popup.SetActive(true);
         }
+        RLAgent.CheckWinCondition(); // Check if the RL agent has won
     }
 }
