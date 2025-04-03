@@ -8,7 +8,7 @@ using static GameManager;
 public class RBAgent : MonoBehaviour
 {
 
-    public int player = 2; //is the agent player 1 or player 2
+    int player = 0; //is the agent player 1 or player 2
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +22,10 @@ public class RBAgent : MonoBehaviour
         
     }
 
+    public void setPlayer(int playerNumber)
+    {
+        player = playerNumber;
+    }
     public Algorithm ChooseAlgorithm(Algorithm[] selectedAlgos)
     {
         if (player == 1)
@@ -45,13 +49,15 @@ public class RBAgent : MonoBehaviour
         return tileLocation;
     }
 
-    public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining)
+    public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining, IEnumerator path)
     {
         //players get 3 boosts
 
         //place first boost near character in the direction of the goal
         int rowDis = sourceRow - goalRow;
         int colDis = sourceCol - goalCol;
+
+        UnityEngine.Debug.Log(sourceRow + " " + goalRow + " " + rowDis + " " + colDis);
 
         (int, int) tileLocation = (-1, -1);
 
@@ -122,11 +128,18 @@ public class RBAgent : MonoBehaviour
                 }
             }
         }
-        //else
-        //{
-        //    
-        //}
+        else {
+
+            tileLocation = PlaceBoostOnPath(path);
+        }
+
+        return tileLocation;
+    }
+    private (int, int) PlaceBoostOnPath(IEnumerator path)
+    {
+        (int, int) tileLocation = (-1, -1);
 
         return tileLocation;
     }
 }
+

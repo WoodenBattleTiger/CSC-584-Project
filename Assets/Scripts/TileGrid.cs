@@ -644,7 +644,7 @@ namespace PathFinding
             ResetGrid();
         }
 
-        private IEnumerator FindPath(Tile start, Tile end, Func<TileGrid, Tile, Tile, List<IVisualStep>, List<Tile>> pathFindingFunc)
+        public IEnumerator FindPath(Tile start, Tile end, Func<TileGrid, Tile, Tile, List<IVisualStep>, List<Tile>> pathFindingFunc)
         {
             ResetGrid();
 

@@ -56,12 +56,12 @@ public class GameManager : MonoBehaviour
         if (player1 == PlayerType.RBAgent)
         {
             player1DropDown.gameObject.SetActive(false); //hide player 1 drop down
-            RBAgent rb = rbAgent;
-            rb.player = 1; //mark RB as player 1
+            rbAgent.setPlayer(1); //mark RB as player 1
 
-            Algorithm rbAlgo = rb.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+            Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
             UnityEngine.Debug.Log(rbAlgo);
             selectedAlgos[0] = rbAlgo;
+
         }
     }
 
@@ -193,6 +193,14 @@ public class GameManager : MonoBehaviour
             Text popupText = popup.GetComponentInChildren<Text>();
             popupText.text = "Player 1's Turn";
             popup.SetActive(true);
+
+            if (player1 == PlayerType.RBAgent)
+            {
+                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
+                    tileGrid.FindPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(boostLocation);
+            }
             
         }
 
