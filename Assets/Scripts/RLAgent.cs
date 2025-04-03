@@ -1,86 +1,132 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.MLAgents
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
+using static GameManager;
 
 public class ReinforcementLearningAgent : Agent
 {
     // Is the agent being trained
     public bool trainingMode;
 
-    // Defines how manu simulation stesp can occur beofre the Agent's episode ends
+    // Defines how many simulation steps can occur before the Agent's episode ends
     public int maxStep;
 
-    // chosen path finding method for the game
-    private string pathFinding;
+    // Chosen pathfinding method for the game
+    private Algorithm pathFinding;
 
-    // number of tiles to place
+    // Number of tiles to place
     private int tilesPlaced;
 
-    // number of boosts to place;
+    // Number of boosts to place
     private int boostsPlaced;
 
+    // Reference to the GameManager
+    private GameManager gameManager;
+
     /// <summary>
-    /// Initialize the agent (overridees ml-agents class)
+    /// Initialize the agent (overrides ml-agents class)
     /// </summary>
-    public override void InitializAgent()
+    public override void Initialize()
     {
         trainingMode = true;
-        maxStep = 0;
-        pathFinding = '';
+        maxStep = 1000;
+        pathFinding = Algorithm.None;
         tilesPlaced = 0;
         boostsPlaced = 0;
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     /// <summary>
     /// How the agent understands the game environment
     /// </summary>
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
-        //grid
-        //walls
-        //starting point
-        //goal
+        // I think this is how we get the current game state
+        sensor.AddObservation(gameManager.tilesRemaining[gameManager.currentTurn]);
+        sensor.AddObservation(gameManager.boostsRemaining[gameManager.currentTurn]);
+        sensor.AddObservation(gameManager.boostsScored[gameManager.currentTurn]);
+        sensor.AddObservation(gameManager.runTime[gameManager.currentTurn]);
     }
 
     /// <summary>
-    /// What hte agent can do
+    /// What the agent can do
     /// </summary>
-    public override void AgentAction()
+    public override void OnActionReceived(float[] vectorAction)
     {
-        // Functions to implement
-        ChoosePathFindingAlgorithm();
-        PlaceTiles();
-        PlaceBoosts();
+        // Convert actions to discrete values
+        int action = Mathf.FloorToInt(vectorAction[0]);
 
-        // if (win) {
-        //     AddReward(5f);
-        //     Done();
-        // }
+        switch (action)
+        {
+            case 0:
+                ChoosePathFindingAlgorithm();
+                break;
+            case 1:
+                PlaceTiles();
+                break;
+            case 2:
+                PlaceBoosts();
+                break;
+        }
+
+        // Check for win condition
+        if (CheckWinCondition())
+        {
+            SetReward(5f);
+            EndEpisode();
+        }
+
+        // Check for max steps
+        if (StepCount >= maxStep)
+        {
+            EndEpisode();
+        }
     }
 
-    private void ChoosePathFindingAlgorithm() 
+    private void ChoosePathFindingAlgorithm()
     {
-
+        // Randomly choose a pathfinding algorithm
+        pathFinding = (Algorithm)Random.Range(0, System.Enum.GetValues(typeof(Algorithm)).Length);
+        gameManager.SelectPathFindingAlgorithm(pathFinding);
     }
 
     private void PlaceTiles()
     {
-
+        if (gameManager.tilesRemaining[gameManager.currentTurn] > 0)
+        {
+            // Randomly choose coordinates to place a tile
+            int x = Random.Range(0, gameManager.tileGrid.Width);
+            int y = Random.Range(0, gameManager.tileGrid.Height);
+            gameManager.PlaceTile(x, y);
+        }
     }
 
-    private voice PlaceBoosts()
+    private void PlaceBoosts()
     {
+        if (gameManager.boostsRemaining[gameManager.currentTurn] > 0)
+        {
+            // Randomly choose coordinates to place a boost
+            int x = Random.Range(0, gameManager.tileGrid.Width);
+            int y = Random.Range(0, gameManager.tileGrid.Height);
+            gameManager.PlaceBoost(x, y);
+        }
+    }
 
+    private bool CheckWinCondition()
+    {
+        // logic for checking win condition
     }
 
     /// <summary>
     /// Reset the scene
     /// </summary>
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
-        pathFinding = '';
+        pathFinding = Algorithm.None;
         tilesPlaced = 0;
         boostsPlaced = 0;
+        gameManager.ResetGame();
     }
 }
