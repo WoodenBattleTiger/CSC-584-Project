@@ -197,9 +197,11 @@ public class GameManager : MonoBehaviour
             if (player1 == PlayerType.RBAgent)
             {
                 (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
-                    tileGrid.FindPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
 
                 UnityEngine.Debug.Log(boostLocation);
+
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
             }
             
         }

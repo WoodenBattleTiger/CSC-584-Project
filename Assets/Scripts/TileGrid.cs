@@ -644,6 +644,14 @@ namespace PathFinding
             ResetGrid();
         }
 
+        public List<Tile> GetPath(Tile start, Tile end, Func<TileGrid, Tile, Tile, List<IVisualStep>, List<Tile>> pathFindingFunc)
+        {
+            List<IVisualStep> steps = new List<IVisualStep>();
+            List<Tile> path = pathFindingFunc(this, start, end, steps);
+
+            return path;
+        }
+
         public IEnumerator FindPath(Tile start, Tile end, Func<TileGrid, Tile, Tile, List<IVisualStep>, List<Tile>> pathFindingFunc)
         {
             ResetGrid();

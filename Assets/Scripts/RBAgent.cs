@@ -41,23 +41,27 @@ public class RBAgent : MonoBehaviour
         }
     }
 
-    public (int, int) PlaceObstacle()
+    public (int, int) PlaceObstacle(TileGrid grid, int tilesRemaining, List<Tile> opponentPath)
     {
         //place an obstacle tile
+        //since the boost placement will want to place one boost for the first three turns, the RB agent can place only 3 obstacles for those turns
+
+        //pick a random tile from the opponents path and block it
+        (int, int) tileToBlock = GetTileFromPath(opponentPath);
+
         (int, int) tileLocation = (-1, -1);
 
         return tileLocation;
     }
 
-    public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining, IEnumerator path)
+    public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining, List<Tile> path)
     {
+
         //players get 3 boosts
 
         //place first boost near character in the direction of the goal
         int rowDis = sourceRow - goalRow;
         int colDis = sourceCol - goalCol;
-
-        UnityEngine.Debug.Log(sourceRow + " " + goalRow + " " + rowDis + " " + colDis);
 
         (int, int) tileLocation = (-1, -1);
 
@@ -67,32 +71,14 @@ public class RBAgent : MonoBehaviour
             if (Mathf.Abs(rowDis) >= Mathf.Abs(colDis))
             {
                 //the difference in row takes priority, place boost in row closer to goal
-                if (rowDis > 0)
-                {
-                    //goal is below source
-                    tileLocation = (sourceRow - 1, sourceCol);
-
-                }
-                else
-                {
-                    //goal is above source
-                    tileLocation = (sourceRow + 1, sourceCol);
-                }
-
+                if (rowDis > 0) tileLocation = (sourceRow - 1, sourceCol); //goal is below source
+                else tileLocation = (sourceRow + 1, sourceCol); //goal is above source
             }
             else
             {
                 //col difference takes priorty, place boost in col closer to goal
-                if (colDis > 0)
-                {
-                    //goal is to the left of source
-                    tileLocation = (sourceRow, sourceCol - 1);
-                }
-                else
-                {
-                    //goal is to the right source
-                    tileLocation = (sourceRow, sourceCol - 1);
-                }
+                if (colDis > 0) tileLocation = (sourceRow, sourceCol - 1); //goal is to the left of source
+                else tileLocation = (sourceRow, sourceCol - 1); //goal is to the right source
             }
         }
         else if (boostsRemaining == 2)
@@ -100,44 +86,31 @@ public class RBAgent : MonoBehaviour
             if (Mathf.Abs(rowDis) >= Mathf.Abs(colDis))
             {
                 //the difference in row takes priority, place boost in row closer to character
-                if (rowDis > 0)
-                {
-                    //goal is below source
-                    tileLocation = (goalRow + 1, goalCol);
-
-                }
-                else
-                {
-                    //goal is above source
-                    tileLocation = (goalRow - 1, goalCol);
-                }
-
+                if (rowDis > 0) tileLocation = (goalRow + 1, goalCol); //goal is below source
+                else tileLocation = (goalRow - 1, goalCol); //goal is above source
             }
             else
             {
                 //col difference takes priorty, place boost in col closer to character
-                if (colDis > 0)
-                {
-                    //goal is to the left of source
-                    tileLocation = (goalRow, goalCol + 1);
-                }
-                else
-                {
-                    //goal is to the right source
-                    tileLocation = (goalRow, goalCol + 1);
-                }
+                if (colDis > 0) tileLocation = (goalRow, goalCol + 1); //goal is to the left of source
+                else tileLocation = (goalRow, goalCol + 1); //goal is to the right source
             }
         }
         else {
 
-            tileLocation = PlaceBoostOnPath(path);
+            tileLocation = GetTileFromPath(path);
         }
 
         return tileLocation;
     }
-    private (int, int) PlaceBoostOnPath(IEnumerator path)
+    private (int, int) GetTileFromPath(List<Tile> path)
     {
-        (int, int) tileLocation = (-1, -1);
+
+        int randomIdx = Random.Range(0, path.Count);
+
+        Tile selectedTile = path[randomIdx];
+
+        (int, int) tileLocation = (selectedTile.Col, selectedTile.Row);
 
         return tileLocation;
     }
