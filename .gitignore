@@ -1,5 +1,7 @@
 .vs/
+.idea/
 *.sln
 obj/
 Assembly-CSharp.csproj
 [Ll]ibrary/ 
+Temp/

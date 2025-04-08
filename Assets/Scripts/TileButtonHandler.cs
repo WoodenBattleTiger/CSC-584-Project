@@ -174,10 +174,49 @@ public class TileButtonHandler : MonoBehaviour
             tileButton.interactable = which;
         }
     }
+    
+    /// <summary>
+    /// Called by "random agent" or RL code to place an item in grid (with no UI click). This method returns true if the
+    /// item was successfully placed, false otherwise.
+    ///
+    /// Trying to place something out of bounds, or on locations that already have items is considered invalid.
+    /// </summary>
+    public bool AttemptManualPlacement(int row, int col, bool placeBoost) {
+        if (gameManager == null || Grid == null) return false;
 
-    // Update is called once per frame
-    void Update()
-    {
+        Tile selectedTile = Grid.GetTile(row, col);
+        if (selectedTile == null) return false;
+
+        // If something is already there, return false
+        if (selectedTile.Weight != TileGrid.TileWeight_Default ||
+            selectedTile.start || selectedTile.end || selectedTile.isBoost) {
+            return false;
+        }
         
+        // If allocated number of items are already placed, return false
+        if (gameManager.placementsRemaining <= 0) return false;
+
+        // PLacing a wall
+        if (!placeBoost) {
+            if (gameManager.tilesRemaining[gameManager.currentTurn] <= 0) return false;
+
+            Grid.CreateExpensiveArea(row, col, 1, 1, TileGrid.TileWeight_Expensive);
+            selectedTile.owner = (gameManager.currentTurn == 0) ? Tile.Owner.Player1 : Tile.Owner.Player2;
+            placedTile.Invoke();
+        }
+        // Placing a boost
+        else {
+            if (gameManager.boostsRemaining[gameManager.currentTurn] <= 0) return false;
+
+            Grid.CreateExpensiveArea(row, col, 1, 1, TileGrid.TileWeight_Default);
+            selectedTile.ChangePrefab(coinPrefab, new Vector3(0.7f, 0.7f, 0.7f), 0f, "coin");
+            selectedTile.isBoost = true;
+            selectedTile.owner = (gameManager.currentTurn == 0) ? Tile.Owner.Player1 : Tile.Owner.Player2;
+            placedCoin.Invoke();
+        }
+        
+        gameManager.placementsRemaining--;
+        Grid.ResetGrid();
+        return true;
     }
 }
