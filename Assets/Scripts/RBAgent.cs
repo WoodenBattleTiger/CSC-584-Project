@@ -9,6 +9,7 @@ public class RBAgent : MonoBehaviour
 {
 
     int player = 0; //is the agent player 1 or player 2
+    public int currentTurn = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +26,11 @@ public class RBAgent : MonoBehaviour
     public void setPlayer(int playerNumber)
     {
         player = playerNumber;
+    }
+
+    public int getPlayer()
+    {
+        return player;
     }
     public Algorithm ChooseAlgorithm(Algorithm[] selectedAlgos)
     {
@@ -49,9 +55,7 @@ public class RBAgent : MonoBehaviour
         //pick a random tile from the opponents path and block it
         (int, int) tileToBlock = GetTileFromPath(opponentPath);
 
-        (int, int) tileLocation = (-1, -1);
-
-        return tileLocation;
+        return tileToBlock;
     }
 
     public (int,int) PlaceBoost(TileGrid grid, int sourceRow, int sourceCol, int goalRow, int goalCol, int boostsRemaining, List<Tile> path)

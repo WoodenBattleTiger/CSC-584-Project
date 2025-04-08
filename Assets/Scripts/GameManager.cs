@@ -177,8 +177,16 @@ public class GameManager : MonoBehaviour
             player1Info.gameObject.SetActive(true);
             player2Info.gameObject.SetActive(true);
 
-            player1Info.transform.GetChild(0).gameObject.SetActive(true);
-            player2Info.transform.GetChild(0).gameObject.SetActive(true);
+
+            if (player1 == PlayerType.Human)
+            {
+                player1Info.transform.GetChild(0).gameObject.SetActive(true);
+            }
+            
+            if (player2 == PlayerType.Human)
+            {
+                player2Info.transform.GetChild(0).gameObject.SetActive(true);
+            }
 
             //add text
             UpdateInfoText();
@@ -196,12 +204,16 @@ public class GameManager : MonoBehaviour
 
             if (player1 == PlayerType.RBAgent)
             {
+                rbAgent.currentTurn++;
+
                 (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
                     tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
 
                 UnityEngine.Debug.Log(boostLocation);
 
                 tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
+                nextTurn();
             }
             
         }
@@ -288,6 +300,42 @@ public class GameManager : MonoBehaviour
         popup.SetActive(true);
 
         placementsRemaining = placementsPerTurn; //reset turn placements
+
+        if (currentTurn == rbAgent.getPlayer() - 1) //if it is RB's turn
+        {
+            rbAgent.currentTurn++;
+
+            if (boostsRemaining[currentTurn] > 0)
+            {
+                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[currentTurn],
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(boostLocation);
+
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
+            }
+
+            if (tilesRemaining[currentTurn] > 1)
+            {
+                (int, int) wallLocation = rbAgent.PlaceObstacle(tileGrid, tilesRemaining[currentTurn],
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(wallLocation);
+
+                tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
+                tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
+                tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+            }
+
+            if (rbAgent.currentTurn == 3)
+            {
+                playersFinishedEditing[currentTurn] = true;
+            }
+
+
+            nextTurn();
+        }
     }
 
     public void UpdateInfoText()
@@ -362,8 +410,9 @@ public class GameManager : MonoBehaviour
     {
         //reset UI
         //show dropdowns
-        player1DropDown.gameObject.SetActive(true);
-        player2DropDown.gameObject.SetActive(true);
+
+        if (player1 == PlayerType.Human) player1DropDown.gameObject.SetActive(true);
+        if (player2 == PlayerType.Human) player2DropDown.gameObject.SetActive(true);
 
         player1DropDown.value = -1;
         player2DropDown.value = -1;
@@ -416,6 +465,12 @@ public class GameManager : MonoBehaviour
 
         //lock grid
         tileButtonHandler.InteractableGrid(false);
+
+        //reset RB info
+        rbAgent.currentTurn = 0;
+        Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+        UnityEngine.Debug.Log(rbAlgo);
+        selectedAlgos[rbAgent.getPlayer() - 1] = rbAlgo;
     }
 
     public void getRunTime(float time)
