@@ -53,15 +53,27 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (player1 == PlayerType.RBAgent)
+        if (player1 != PlayerType.Human)
         {
             player1DropDown.gameObject.SetActive(false); //hide player 1 drop down
+        }
+        else if (player2 != PlayerType.Human)
+        {
+            player2DropDown.gameObject.SetActive(false); //hide player 2 drop down
+        }
+        if (player1 == PlayerType.RBAgent)
+        {
             rbAgent.setPlayer(1); //mark RB as player 1
 
             Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
             UnityEngine.Debug.Log(rbAlgo);
             selectedAlgos[0] = rbAlgo;
 
+        }
+
+        if (player2 == PlayerType.RBAgent)
+        {
+            rbAgent.setPlayer(2); //mark RB as player 1 
         }
     }
 
@@ -74,6 +86,11 @@ public class GameManager : MonoBehaviour
         //Debug.Log("Change player 1 algorithm to: " + value_text);
 
         updateAlgos(1, value_text);
+
+        //assuming player 1 is a human here, RB agent can now select its algo
+        Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+        UnityEngine.Debug.Log(rbAlgo);
+        selectedAlgos[1] = rbAlgo;
 
         //player2DropDown.ClearOptions();
         //List<string> newOptions = new List<string>();
