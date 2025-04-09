@@ -474,11 +474,18 @@ public class GameManager : MonoBehaviour
 
             tile.isBoost = false; //reset coins on grid
         }
-
         tileGrid.TileColor_Expensive = new UnityEngine.Color(0.19f, 0.65f, 0.43f);
         tileGrid.ClearGrid();
         tileGrid.RandomPath();
-        tileGrid.RandomizedObstacle();        
+        tileGrid.RandomizedObstacle();  
+        
+        //make sure level is valid and repeat randomization until it is
+        while (!validateLevel())
+        {
+            tileGrid.ClearGrid();
+            tileGrid.RandomPath();
+            tileGrid.RandomizedObstacle();
+        }
 
         //lock grid
         tileButtonHandler.InteractableGrid(false);
@@ -514,6 +521,17 @@ public class GameManager : MonoBehaviour
             Text popupText = popup.GetComponentInChildren<Text>();
             popupText.text = "Player " + winner.ToString() + " wins!";
             popup.SetActive(true);
+        }
+    }
+
+    private bool validateLevel()
+    {
+        if (tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar).Count() > 0)
+        {
+            return true;
+        } else
+        {
+            return false;
         }
     }
 }
