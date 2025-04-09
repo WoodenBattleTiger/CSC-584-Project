@@ -736,6 +736,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90cdf919826651440a3e1b86bc80864e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player1: 0
+  player2: 1
   stage: 0
   rbAgent: {fileID: 0}
   rlAgent: {fileID: 885205334}
@@ -4680,6 +4682,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aa117e26647a114f9dc8de84ff479e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentTurn: 0
 --- !u!4 &1631717068
 Transform:
   m_ObjectHideFlags: 0

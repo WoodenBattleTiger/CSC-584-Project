@@ -2,12 +2,17 @@ using PathFinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public enum PlayerType {Human, RBAgent, RLAgent };
+
+    public PlayerType player1 = PlayerType.Human;
+    public PlayerType player2 = PlayerType.Human;
 
     public int stage = 0;
 
@@ -59,6 +64,28 @@ public class GameManager : MonoBehaviour
             if (continueButton != null) continueButton.SetActive(false);
            if (popup != null) popup.SetActive(false);
         }
+        if (player1 != PlayerType.Human)
+        {
+            player1DropDown.gameObject.SetActive(false); //hide player 1 drop down
+        }
+        else if (player2 != PlayerType.Human)
+        {
+            player2DropDown.gameObject.SetActive(false); //hide player 2 drop down
+        }
+        if (player1 == PlayerType.RBAgent)
+        {
+            rbAgent.setPlayer(1); //mark RB as player 1
+
+            Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+            UnityEngine.Debug.Log(rbAlgo);
+            selectedAlgos[0] = rbAlgo;
+
+        }
+
+        if (player2 == PlayerType.RBAgent)
+        {
+            rbAgent.setPlayer(2); //mark RB as player 1 
+        }
     }
 
     private void Update() {
@@ -98,6 +125,11 @@ public class GameManager : MonoBehaviour
         //Debug.Log("Change player 1 algorithm to: " + value_text);
 
         updateAlgos(1, value_text);
+
+        //assuming player 1 is a human here, RB agent can now select its algo
+        Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+        UnityEngine.Debug.Log(rbAlgo);
+        selectedAlgos[1] = rbAlgo;
 
         //player2DropDown.ClearOptions();
         //List<string> newOptions = new List<string>();
@@ -158,11 +190,11 @@ public class GameManager : MonoBehaviour
             selectedAlgos[player - 1] = Algorithm.None;
         }
 
-        Debug.Log("Selected Algos" + selectedAlgos[player - 1].ToString());
+        UnityEngine.Debug.Log("Selected Algos" + selectedAlgos[player - 1].ToString());
 
         if (selectedAlgos[0] == selectedAlgos[1])
         {
-            Debug.Log("No duplicates allowed");
+            UnityEngine.Debug.Log("No duplicates allowed");
         }
     }
 
@@ -170,7 +202,7 @@ public class GameManager : MonoBehaviour
     {
         if (stage == 0 && selectedAlgos.Contains(Algorithm.None) || selectedAlgos[1] == selectedAlgos[0])
         {
-            Debug.Log("Both players must select different algorithm to continue.");
+            UnityEngine.Debug.Log("Both players must select different algorithm to continue.");
             return;
         }
 
@@ -181,7 +213,7 @@ public class GameManager : MonoBehaviour
         }
 
         stage++;
-        Debug.Log("Stage: " + stage.ToString());
+        UnityEngine.Debug.Log("Stage: " + stage.ToString());
         updateStage(stage);
     }
 
@@ -264,8 +296,16 @@ public class GameManager : MonoBehaviour
             player1Info.gameObject.SetActive(true);
             player2Info.gameObject.SetActive(true);
 
-            player1Info.transform.GetChild(0).gameObject.SetActive(true);
-            player2Info.transform.GetChild(0).gameObject.SetActive(true);
+
+            if (player1 == PlayerType.Human)
+            {
+                player1Info.transform.GetChild(0).gameObject.SetActive(true);
+            }
+            
+            if (player2 == PlayerType.Human)
+            {
+                player2Info.transform.GetChild(0).gameObject.SetActive(true);
+            }
 
             //add text
             UpdateInfoText();
@@ -280,6 +320,20 @@ public class GameManager : MonoBehaviour
             Text popupText = popup.GetComponentInChildren<Text>();
             popupText.text = "Player 1's Turn";
             popup.SetActive(true);
+
+            if (player1 == PlayerType.RBAgent)
+            {
+                rbAgent.currentTurn++;
+
+                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(boostLocation);
+
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
+                nextTurn();
+            }
             
         }
 
@@ -302,17 +356,17 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgos[0])
             {
                 case Algorithm.BFS:
-                    Debug.Log("Run BFS");
+                    UnityEngine.Debug.Log("Run BFS");
                     tileGrid.runBFS = true;
                     break;
 
                 case Algorithm.DFS:
-                    Debug.Log("Run DFS");
+                    UnityEngine.Debug.Log("Run DFS");
                     tileGrid.runDFS = true;
                     break;
 
                 case Algorithm.Astar:
-                    Debug.Log("Run A*");
+                    UnityEngine.Debug.Log("Run A*");
                     tileGrid.runAStar = true;
                     break;
             }
@@ -330,17 +384,17 @@ public class GameManager : MonoBehaviour
             switch (selectedAlgos[1])
             {
                 case Algorithm.BFS:
-                    Debug.Log("Run BFS");
+                    UnityEngine.Debug.Log("Run BFS");
                     tileGrid.runBFS = true;
                     break;
 
                 case Algorithm.DFS:
-                    Debug.Log("Run DFS");
+                    UnityEngine.Debug.Log("Run DFS");
                     tileGrid.runDFS = true;
                     break;
 
                 case Algorithm.Astar:
-                    Debug.Log("Run A*");
+                    UnityEngine.Debug.Log("Run A*");
                     tileGrid.runAStar = true;
                     break;
             }
@@ -473,6 +527,42 @@ public class GameManager : MonoBehaviour
         popup.SetActive(true);
 
         placementsRemaining = placementsPerTurn; //reset turn placements
+
+        if (currentTurn == rbAgent.getPlayer() - 1) //if it is RB's turn
+        {
+            rbAgent.currentTurn++;
+
+            if (boostsRemaining[currentTurn] > 0)
+            {
+                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[currentTurn],
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(boostLocation);
+
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
+            }
+
+            if (tilesRemaining[currentTurn] > 1)
+            {
+                (int, int) wallLocation = rbAgent.PlaceObstacle(tileGrid, tilesRemaining[currentTurn],
+                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                UnityEngine.Debug.Log(wallLocation);
+
+                tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
+                tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
+                tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+            }
+
+            if (rbAgent.currentTurn == 3)
+            {
+                playersFinishedEditing[currentTurn] = true;
+            }
+
+
+            nextTurn();
+        }
     }
 
     public void UpdateInfoText()
@@ -498,7 +588,7 @@ public class GameManager : MonoBehaviour
     public void reduceTiles()
     {
         tilesRemaining[currentTurn] -= 1;
-        Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
+        UnityEngine.Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
         UpdateInfoText();
         placementsRemaining -= 1;
     }
@@ -506,7 +596,7 @@ public class GameManager : MonoBehaviour
     public void addTiles()
     {
         tilesRemaining[currentTurn] += 1;
-        Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
+        UnityEngine.Debug.Log("Tiles Remaining: " + tilesRemaining[currentTurn]);
         UpdateInfoText();
         placementsRemaining += 1;
     }
@@ -528,7 +618,7 @@ public class GameManager : MonoBehaviour
     public void addBoostToScore()
     {
         boostsScored[currentTurn] += 1;
-        Debug.Log("Boost hit!");
+        UnityEngine.Debug.Log("Boost hit!");
         UpdateInfoText();
     }
 
@@ -588,8 +678,9 @@ public class GameManager : MonoBehaviour
     {
         //reset UI
         //show dropdowns
-        player1DropDown.gameObject.SetActive(true);
-        player2DropDown.gameObject.SetActive(true);
+
+        if (player1 == PlayerType.Human) player1DropDown.gameObject.SetActive(true);
+        if (player2 == PlayerType.Human) player2DropDown.gameObject.SetActive(true);
 
         player1DropDown.value = -1;
         player2DropDown.value = -1;
@@ -634,14 +725,27 @@ public class GameManager : MonoBehaviour
 
             tile.isBoost = false; //reset coins on grid
         }
-
         tileGrid.TileColor_Expensive = new UnityEngine.Color(0.19f, 0.65f, 0.43f);
         tileGrid.ClearGrid();
         tileGrid.RandomPath();
-        tileGrid.RandomizedObstacle();        
+        tileGrid.RandomizedObstacle();  
+        
+        //make sure level is valid and repeat randomization until it is
+        while (!validateLevel())
+        {
+            tileGrid.ClearGrid();
+            tileGrid.RandomPath();
+            tileGrid.RandomizedObstacle();
+        }
 
         //lock grid
         tileButtonHandler.InteractableGrid(false);
+
+        //reset RB info
+        rbAgent.currentTurn = 0;
+        Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+        UnityEngine.Debug.Log(rbAlgo);
+        selectedAlgos[rbAgent.getPlayer() - 1] = rbAlgo;
     }
 
     public void getRunTime(float time)
@@ -698,5 +802,16 @@ public class GameManager : MonoBehaviour
     public void skipRun() {
         stage = 3;
         nonUIMoveToNextStage();
+    }
+    
+    private bool validateLevel()
+    {
+        if (tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar).Count() > 0)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 }
