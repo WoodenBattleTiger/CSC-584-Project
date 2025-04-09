@@ -111,6 +111,8 @@ namespace PathFinding
 
         private IEnumerator _pathRoutine;
 
+        public GameManager gameManager;
+
         private void Awake()
         {
 
@@ -658,7 +660,15 @@ namespace PathFinding
 
             foreach (var step in steps)
             {
-                step.Execute();
+                try
+                {
+                    step.Execute();
+                }
+                catch (NullReferenceException)
+                {
+                    gameManager.skipRun();
+                }
+
                 yield return new WaitForFixedUpdate();
             }
 

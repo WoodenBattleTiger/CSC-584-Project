@@ -694,4 +694,9 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void skipRun() {
+        stage = 3;
+        nonUIMoveToNextStage();
+    }
 }

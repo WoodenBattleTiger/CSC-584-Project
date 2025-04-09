@@ -736,25 +736,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90cdf919826651440a3e1b86bc80864e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trainingMode: 1
+  stage: 0
+  rbAgent: {fileID: 0}
   rlAgent: {fileID: 885205334}
+  selectedAlgos: 0300000003000000
   tilesRemaining: 0a0000000a000000
   boostsRemaining: 0300000003000000
   currentTurn: 0
+  playersFinishedEditing: 0000
   placementsPerTurn: 4
   placementsRemaining: 4
-  tileButtonHandler: {fileID: 607966352}
-  tileGrid: {fileID: 1048467616}
   player1DropDown: {fileID: 525287772}
   player2DropDown: {fileID: 1573346011}
-  popup: {fileID: 448253084}
-  continueButton: {fileID: 801793135}
+  tileButtonHandler: {fileID: 607966352}
+  tileGrid: {fileID: 1048467616}
   stageText: {fileID: 1407704569}
   player1Info: {fileID: 1476046254}
   player2Info: {fileID: 1651665421}
-  stage: 0
-  playersFinishedEditing: 0000
-  selectedAlgos: 0300000003000000
+  popup: {fileID: 448253084}
+  continueButton: {fileID: 801793135}
 --- !u!4 &433717854
 Transform:
   m_ObjectHideFlags: 0
@@ -767,7 +767,8 @@ Transform:
   m_LocalPosition: {x: 682.266, y: 214.50157, z: -106.091156}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1048467615}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &448253082
@@ -1057,7 +1058,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &525287771
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1976,7 +1977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &761404846
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2056,7 +2057,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &801793136
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2286,6 +2287,7 @@ MonoBehaviour:
   MaxStep: 0
   gameManager: {fileID: 433717853}
   tileGrid: {fileID: 1048467616}
+  trainingMode: 1
 --- !u!114 &885205335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2311,7 +2313,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: TilePlacement
+  m_BehaviorName: ItemPlacement
   TeamId: 0
   m_UseChildSensors: 0
   m_UseChildActuators: 1
@@ -2507,7 +2509,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &910238842
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2679,37 +2681,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958181760}
   m_CullTransparentMesh: 0
---- !u!1 &970901024
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 970901025}
-  m_Layer: 0
-  m_Name: RLAgent
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &970901025
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 970901024}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &976624701
 GameObject:
   m_ObjectHideFlags: 0
@@ -2893,13 +2864,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1048467614}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: 7, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -690.266, y: -207.50157, z: 106.091156}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1220396505}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 433717854}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1048467616
 MonoBehaviour:
@@ -2961,6 +2932,7 @@ MonoBehaviour:
   runBFS: 0
   runDFS: 0
   runAStar: 0
+  gameManager: {fileID: 433717853}
 --- !u!1 &1084064978
 GameObject:
   m_ObjectHideFlags: 0
@@ -3844,7 +3816,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1407704568
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4458,7 +4430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1573346010
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6264,10 +6236,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 433717854}
-  - {fileID: 1048467615}
   - {fileID: 188885942}
   - {fileID: 1799039124}
   - {fileID: 660455512}
   - {fileID: 1631717068}
-  - {fileID: 970901025}
   - {fileID: 885205336}
