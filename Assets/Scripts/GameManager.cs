@@ -111,8 +111,8 @@ public class GameManager : MonoBehaviour
          index = UnityEngine.Random.Range(0, availableAlgos.Count);
          selectedAlgos[1] = availableAlgos[index];
 
-         Debug.Log("Player 1 algorithm: " + selectedAlgos[0].ToString());
-         Debug.Log("Player 2 algorithm: " + selectedAlgos[1].ToString());
+         UnityEngine.Debug.Log("Player 1 algorithm: " + selectedAlgos[0].ToString());
+         UnityEngine.Debug.Log("Player 2 algorithm: " + selectedAlgos[1].ToString());
          nonUIMoveToNextStage();
      }
 
@@ -219,7 +219,7 @@ public class GameManager : MonoBehaviour
 
     public void nonUIMoveToNextStage() {
         stage++;
-        Debug.Log("Stage: " + stage.ToString());
+        UnityEngine.Debug.Log("Stage: " + stage.ToString());
         nonUIUpdateStage();
     }
 
@@ -234,17 +234,17 @@ public class GameManager : MonoBehaviour
                 currentTurn = 0; 
                 switch (selectedAlgos[0]) {
                     case Algorithm.BFS:
-                        Debug.Log("Run BFS");
+                        UnityEngine.Debug.Log("Run BFS");
                         tileGrid.runBFS = true;
                         break;
 
                     case Algorithm.DFS:
-                        Debug.Log("Run DFS");
+                        UnityEngine.Debug.Log("Run DFS");
                         tileGrid.runDFS = true;
                         break;
 
                     case Algorithm.Astar:
-                        Debug.Log("Run A*");
+                        UnityEngine.Debug.Log("Run A*");
                         tileGrid.runAStar = true;
                         break;
                 }
@@ -254,17 +254,17 @@ public class GameManager : MonoBehaviour
                 currentTurn = 1 - currentTurn; 
                 switch (selectedAlgos[1]) {
                     case Algorithm.BFS:
-                        Debug.Log("Run BFS");
+                        UnityEngine.Debug.Log("Run BFS");
                         tileGrid.runBFS = true;
                         break;
 
                     case Algorithm.DFS:
-                        Debug.Log("Run DFS");
+                        UnityEngine.Debug.Log("Run DFS");
                         tileGrid.runDFS = true;
                         break;
 
                     case Algorithm.Astar:
-                        Debug.Log("Run A*");
+                        UnityEngine.Debug.Log("Run A*");
                         tileGrid.runAStar = true;
                         break;
                 }

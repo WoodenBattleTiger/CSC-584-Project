@@ -28,7 +28,7 @@ public class TileButtonHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
+        gameManager = GameObject.FindFirstObjectByType<GameManager>().GetComponent<GameManager>();
 
         for (int i = 0; i < 15; i++)
         {

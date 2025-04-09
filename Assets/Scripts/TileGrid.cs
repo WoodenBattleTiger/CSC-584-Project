@@ -158,7 +158,7 @@ namespace PathFinding
 
             ResetGrid();
 
-            GameManager gameManager = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
+            GameManager gameManager = GameObject.FindFirstObjectByType<GameManager>().GetComponent<GameManager>();
 
             sendRunTime += gameManager.getRunTime;
             revealWinner += gameManager.revealWinner;
