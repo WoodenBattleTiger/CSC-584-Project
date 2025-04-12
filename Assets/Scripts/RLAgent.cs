@@ -12,6 +12,7 @@ public class RLAgent : Agent {
 
     private bool episodeActive;
     public bool trainingMode = true;
+    public int player { get; set; }
 
     public override void Initialize() {
         episodeActive = false;
@@ -54,19 +55,17 @@ public class RLAgent : Agent {
         
 
         // Observing resource usage and pathfinding algorithms of each player
-        int rlPlayerIndex = 0;
-        sensor.AddObservation((float)gameManager.tilesRemaining[rlPlayerIndex]);  
-        sensor.AddObservation((float)gameManager.boostsRemaining[rlPlayerIndex]); 
-        sensor.AddObservation((float)gameManager.placementsRemaining);            
-
-        int oppIndex = 1;
-        sensor.AddObservation((float)gameManager.tilesRemaining[oppIndex]);
-        sensor.AddObservation((float)gameManager.boostsRemaining[oppIndex]);
+        sensor.AddObservation((float)gameManager.tilesRemaining[player]);  
+        sensor.AddObservation((float)gameManager.boostsRemaining[player]); 
+        sensor.AddObservation((float)gameManager.placementsRemaining);
+        
+        sensor.AddObservation((float)gameManager.tilesRemaining[1 - player]);
+        sensor.AddObservation((float)gameManager.boostsRemaining[1- player]);
 
         sensor.AddObservation((float)gameManager.currentTurn);
 
-        float myAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[0]);
-        float oppAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[1]);
+        float myAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[player]);
+        float oppAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[1 - player]);
         sensor.AddObservation(myAlgo);
         sensor.AddObservation(oppAlgo);
     }
@@ -100,8 +99,6 @@ public class RLAgent : Agent {
             AddReward(-0.001f);
             return;
         }
-
-        int rlIndex = 0;
 
         // Deciding first action. I'm taking min here as a safety measure. Agent shouldn't try to place more than what
         // can be place at any given moment.
@@ -140,7 +137,7 @@ public class RLAgent : Agent {
             if (act == 0) {
                 // Attempt wall placement. If agent try to place walls more than what's available, gives a penalty.
                 // For successful placement, gives a reward.
-                if (gameManager.tilesRemaining[rlIndex] - wallsUsed > 0) {
+                if (gameManager.tilesRemaining[player] - wallsUsed > 0) {
                     placementSuccess = gameManager.tileButtonHandler.AttemptManualPlacement(row, col, false);
                     if (placementSuccess) {
                         wallsUsed++;
@@ -157,7 +154,7 @@ public class RLAgent : Agent {
             else if (act == 1) {
                 // Attempt boost placement. If agent try to place boosts more than what's available, gives a penalty.
                 // For successful placement, gives a reward.
-                if (gameManager.boostsRemaining[rlIndex] - boostsUsed > 0) {
+                if (gameManager.boostsRemaining[player] - boostsUsed > 0) {
                     placementSuccess = gameManager.tileButtonHandler.AttemptManualPlacement(row, col, true);
                     if (placementSuccess) {
                         boostsUsed++;
@@ -188,7 +185,7 @@ public class RLAgent : Agent {
     public void HandleFinalReward(int winningPlayerIndex) {
         if (!episodeActive) return;
 
-        if (winningPlayerIndex == 1) AddReward(+1.0f);
+        if (winningPlayerIndex == player) AddReward(+1.0f);
         else AddReward(-1.0f);
 
         Debug.Log("The winner is player: " + winningPlayerIndex);
