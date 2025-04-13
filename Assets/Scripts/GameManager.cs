@@ -72,31 +72,55 @@ public class GameManager : MonoBehaviour
         {
             player2DropDown.gameObject.SetActive(false); //hide player 2 drop down
         }
-        if (player1 == PlayerType.RBAgent)
-        {
-            rbAgent.setPlayer(1); //mark RB as player 1
-
-            Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
-            UnityEngine.Debug.Log(rbAlgo);
-            selectedAlgos[0] = rbAlgo;
-
-        }
-
-        if (player2 == PlayerType.RBAgent)
-        {
-            rbAgent.setPlayer(2); //mark RB as player 1 
-        }
+        
+        // For training we need this method so that RL agent will learn how to play as both players
+        RandomizePlayerAssignments();
     }
 
     private void Update() {
         // Yasitha: I needed to wait out 'start' methods of other classes, so had to do it this way.
         if (!startAutomation) return;
         startAutomation = false;
-        SetRandomAlgorithms();
+        // SetRandomAlgorithms();
+        nonUIMoveToNextStage();
+    }
+    
+    /// <summary>
+    /// Sets player 1 and player 2 randomly. Then selects pothfinding algorithms for each agent.
+    /// </summary>
+    private void RandomizePlayerAssignments() {
+        int rand = UnityEngine.Random.Range(0, 2);
+    
+        if (rand == 0) {
+            player1 = PlayerType.RBAgent;
+            player2 = PlayerType.RLAgent;
+        } else {
+            player1 = PlayerType.RLAgent;
+            player2 = PlayerType.RBAgent;
+        }
+        
+        if (player1 == PlayerType.RBAgent) {
+            rbAgent.setPlayer(1); //mark RB as player 1
+            rlAgent.player = 2;   // mark RL as player 2
+        }
+        else {
+            rbAgent.setPlayer(2); //mark RB as player 2 
+            rlAgent.player = 1;   // mark RL as player 1
+        }
+        
+        SetRLAgentsAlgorithm();
+        Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm
+        UnityEngine.Debug.Log(rbAlgo);
+        selectedAlgos[rbAgent.getPlayer() - 1] = rbAlgo;
+        
+        if (!startAutomation) nonUIMoveToNextStage();
     }
 
+    
+    /// <summary>
+    /// Select random pathfinding algorithms for both agents. 
+    /// </summary>
     private void SetRandomAlgorithms() {
-         // Choose two different algorithms at random.
          List<Algorithm> availableAlgos = new List<Algorithm>() 
          { 
              Algorithm.BFS, 
@@ -115,6 +139,26 @@ public class GameManager : MonoBehaviour
          UnityEngine.Debug.Log("Player 2 algorithm: " + selectedAlgos[1].ToString());
          nonUIMoveToNextStage();
      }
+    
+    /// <summary>
+    /// Select pathfinding algorithm just for the RL agent.
+    /// </summary>
+    private void SetRLAgentsAlgorithm() {
+        List<Algorithm> availableAlgos = new List<Algorithm>() { 
+            Algorithm.BFS, 
+            Algorithm.DFS, 
+            Algorithm.Astar 
+        };
+        
+        int randomIndex = UnityEngine.Random.Range(0, availableAlgos.Count);
+        Algorithm chosenAlgo = availableAlgos[randomIndex];
+        
+        if (rlAgent.player == 1) selectedAlgos[0] = chosenAlgo;
+        else selectedAlgos[1] = chosenAlgo;
+
+        UnityEngine.Debug.Log("RL Agent (player " + rlAgent.player + ") algorithm: " + chosenAlgo.ToString());
+    }
+
 
     public void changePlayer1Algo()
     {
@@ -227,7 +271,8 @@ public class GameManager : MonoBehaviour
         switch (stage) {
             case 1:
                 tileButtonHandler.InteractableGrid(true);
-                rlAgent.RequestAction();                             // Making RL agent play the first move
+                if (player1 == PlayerType.RBAgent) RBAgentFirstTurn();     // Making RB agent play the first move
+                else rlAgent.RequestDecision();                            // Making RL agent play the first move
                 break;
             // Running player 1's pathfinding algorithm
             case 2:
@@ -275,7 +320,8 @@ public class GameManager : MonoBehaviour
                 nonUIResetGame();
                 rlAgent.Initialize();
                 rlAgent.OnEpisodeBegin();  
-                SetRandomAlgorithms();
+                // SetRandomAlgorithms();
+                RandomizePlayerAssignments();
                 break;
         }
     }
@@ -321,20 +367,7 @@ public class GameManager : MonoBehaviour
             popupText.text = "Player 1's Turn";
             popup.SetActive(true);
 
-            if (player1 == PlayerType.RBAgent)
-            {
-                rbAgent.currentTurn++;
-
-                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
-                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
-
-                UnityEngine.Debug.Log(boostLocation);
-
-                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
-                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
-                nextTurn();
-            }
-            
+            RBAgentFirstTurn();
         }
 
         if (stage == 2)
@@ -409,6 +442,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void RBAgentFirstTurn() {
+        if (player1 == PlayerType.RBAgent)
+        {
+            rbAgent.currentTurn++;
+
+            (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[0],
+                tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+            UnityEngine.Debug.Log(boostLocation);
+
+            tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+            tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
+            nonUINextTurn();
+        }
+    }
+
     public void nonUINextTurn() {
         currentTurn = 1 - currentTurn;
         placementsRemaining = placementsPerTurn;
@@ -424,32 +473,26 @@ public class GameManager : MonoBehaviour
             nonUINextTurn();
             return;
         }
-        
-        switch (currentTurn) {
-            // Make random agent play the turn
-            case 1:
-                DoRandomOpponentTurn();
-                break;
-            // Make RL agent play the turn
-            case 0:
-                rlAgent.RequestDecision();
-                break;
-        }
+
+        if (currentTurn == rbAgent.getPlayer() - 1) PlayRBAgentTurn();
+        else PlayRLAgentTurn();
     }
     
     /// <summary>
     /// If the player with current turn has nothing more to place, return true.
     /// </summary>
     private bool IsPlayerDone() {
-         return tilesRemaining[currentTurn] <= 0 && boostsRemaining[currentTurn] <= 0;
+        return playersFinishedEditing[currentTurn];
+        //return tilesRemaining[currentTurn] <= 0 && boostsRemaining[currentTurn] <= 0;
     }
     
     /// <summary>
     /// If both players are finished placing items, returns true.
     /// </summary>
     private bool AreBothPlayersDone() {
-        return tilesRemaining[currentTurn] <= 0 && boostsRemaining[currentTurn] <= 0 &&
-               tilesRemaining[1 - currentTurn] <= 0 && boostsRemaining[1 - currentTurn] <= 0;
+        return playersFinishedEditing[0] && playersFinishedEditing[1];
+        // return tilesRemaining[currentTurn] <= 0 && boostsRemaining[currentTurn] <= 0 &&
+        //        tilesRemaining[1 - currentTurn] <= 0 && boostsRemaining[1 - currentTurn] <= 0;
     }
     
     /// <summary>
@@ -528,6 +571,19 @@ public class GameManager : MonoBehaviour
 
         placementsRemaining = placementsPerTurn; //reset turn placements
 
+        PlayRBAgentTurn();
+    }
+
+    private void PlayRLAgentTurn() {
+        if (tilesRemaining[currentTurn] > 0 || boostsRemaining[currentTurn] > 0)
+            rlAgent.RequestDecision();
+        else {
+            playersFinishedEditing[currentTurn] = true;
+            nonUINextTurn();
+        }
+    }
+
+    private void PlayRBAgentTurn() {
         if (currentTurn == rbAgent.getPlayer() - 1) //if it is RB's turn
         {
             rbAgent.currentTurn++;
@@ -559,9 +615,12 @@ public class GameManager : MonoBehaviour
             {
                 playersFinishedEditing[currentTurn] = true;
             }
+            
+            // if (boostsRemaining[currentTurn] <= 0 && tilesRemaining[currentTurn] <= 1)
+            //     playersFinishedEditing[currentTurn] = true;
 
 
-            nextTurn();
+            nonUINextTurn();
         }
     }
 
@@ -672,6 +731,9 @@ public class GameManager : MonoBehaviour
 
         //lock grid
         tileButtonHandler.InteractableGrid(false);
+        
+        // reset RB agent
+        ResetRBAgent();
     }
 
     public void ResetGame()
@@ -741,6 +803,14 @@ public class GameManager : MonoBehaviour
         //lock grid
         tileButtonHandler.InteractableGrid(false);
 
+        // reset RB agent
+        ResetRBAgent();
+    }
+    
+    /// <summary>
+    /// Resets RB agent.
+    /// </summary>
+    private void ResetRBAgent() {
         //reset RB info
         rbAgent.currentTurn = 0;
         Algorithm rbAlgo = rbAgent.ChooseAlgorithm(selectedAlgos); //let RB select an algorithm

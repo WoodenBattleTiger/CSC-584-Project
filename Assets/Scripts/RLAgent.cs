@@ -55,17 +55,17 @@ public class RLAgent : Agent {
         
 
         // Observing resource usage and pathfinding algorithms of each player
-        sensor.AddObservation((float)gameManager.tilesRemaining[player]);  
-        sensor.AddObservation((float)gameManager.boostsRemaining[player]); 
+        sensor.AddObservation((float)gameManager.tilesRemaining[player - 1]);  
+        sensor.AddObservation((float)gameManager.boostsRemaining[player - 1]); 
         sensor.AddObservation((float)gameManager.placementsRemaining);
         
-        sensor.AddObservation((float)gameManager.tilesRemaining[1 - player]);
-        sensor.AddObservation((float)gameManager.boostsRemaining[1- player]);
+        sensor.AddObservation((float)gameManager.tilesRemaining[2 - player]);
+        sensor.AddObservation((float)gameManager.boostsRemaining[2- player]);
 
         sensor.AddObservation((float)gameManager.currentTurn);
 
-        float myAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[player]);
-        float oppAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[1 - player]);
+        float myAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[player - 1]);
+        float oppAlgo = ConvertAlgoToFloat(gameManager.selectedAlgos[2 - player]);
         sensor.AddObservation(myAlgo);
         sensor.AddObservation(oppAlgo);
     }
@@ -95,7 +95,7 @@ public class RLAgent : Agent {
         AddReward(-0.001f);
         
         // Shouldn't take decisions when it's not their turn. (Ideally this won't happen, but including as a safety measure)
-        if (gameManager.currentTurn != 0) {
+        if (gameManager.currentTurn != player - 1) {
             AddReward(-0.001f);
             return;
         }
@@ -137,7 +137,7 @@ public class RLAgent : Agent {
             if (act == 0) {
                 // Attempt wall placement. If agent try to place walls more than what's available, gives a penalty.
                 // For successful placement, gives a reward.
-                if (gameManager.tilesRemaining[player] - wallsUsed > 0) {
+                if (gameManager.tilesRemaining[player - 1] - wallsUsed > 0) {
                     placementSuccess = gameManager.tileButtonHandler.AttemptManualPlacement(row, col, false);
                     if (placementSuccess) {
                         wallsUsed++;
@@ -154,7 +154,7 @@ public class RLAgent : Agent {
             else if (act == 1) {
                 // Attempt boost placement. If agent try to place boosts more than what's available, gives a penalty.
                 // For successful placement, gives a reward.
-                if (gameManager.boostsRemaining[player] - boostsUsed > 0) {
+                if (gameManager.boostsRemaining[player - 1] - boostsUsed > 0) {
                     placementSuccess = gameManager.tileButtonHandler.AttemptManualPlacement(row, col, true);
                     if (placementSuccess) {
                         boostsUsed++;
