@@ -608,12 +608,12 @@ public class GameManager : MonoBehaviour
 
                 tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
 
-                if (wallLocation.Item2 + 1 >= 0)
+                if (wallLocation.Item2 + 1 >= 0 && wallLocation.Item2 <= 14)
                 {
                     tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
                 }
 
-                if (wallLocation.Item2 - 1 >= 0)
+                if (wallLocation.Item2 - 1 >= 0 && wallLocation.Item2 <= 14)
                 {
                     tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
                 }

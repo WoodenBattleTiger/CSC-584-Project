@@ -116,12 +116,22 @@ public class RBAgent : MonoBehaviour
             tileLocation.Item2 = 0;
         }
 
+        if (tileLocation.Item1 > 14)
+        {
+            tileLocation.Item1 = 14;
+        }
+
+        if (tileLocation.Item2 > 14)
+        {
+            tileLocation.Item2 = 14;
+        }
+
         return tileLocation;
     }
     private (int, int) GetTileFromPath(List<Tile> path)
     {
 
-        int randomIdx = Random.Range(0, path.Count);
+        int randomIdx = Random.Range(1, path.Count);
 
         Tile selectedTile = path[randomIdx];
 

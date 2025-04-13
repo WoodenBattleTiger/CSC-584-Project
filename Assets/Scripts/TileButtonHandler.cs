@@ -63,6 +63,11 @@ public class TileButtonHandler : MonoBehaviour
 
     public void OnButtonPress(int row, int col)
     {
+        if (row < 0 || col < 0 || col > 14 || row > 14)
+        {
+            return;
+        }
+
         //Debug.Log("Button pressed at " + row + " " + col);
         var selectedTile = Grid.GetTile(row, col);
         Debug.Log(selectedTile.owner);
