@@ -67,7 +67,7 @@ public class RBAgent : MonoBehaviour
         int rowDis = sourceRow - goalRow;
         int colDis = sourceCol - goalCol;
 
-        (int, int) tileLocation = (-1, -1);
+        (int, int) tileLocation;
 
         if (boostsRemaining == 3)
         {
@@ -103,6 +103,17 @@ public class RBAgent : MonoBehaviour
         else {
 
             tileLocation = GetTileFromPath(path);
+        }
+
+        //bounds checking
+        if (tileLocation.Item1 < 0)
+        {
+            tileLocation.Item1 = 0;
+        }
+
+        if (tileLocation.Item2 < 0)
+        {
+            tileLocation.Item2 = 0;
         }
 
         return tileLocation;

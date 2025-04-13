@@ -607,8 +607,17 @@ public class GameManager : MonoBehaviour
                 UnityEngine.Debug.Log(wallLocation);
 
                 tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
-                tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
-                tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+
+                if (wallLocation.Item2 + 1 >= 0)
+                {
+                    tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
+                }
+
+                if (wallLocation.Item2 - 1 >= 0)
+                {
+                    tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+                }
+                
             }
 
             if (rbAgent.currentTurn == 3)

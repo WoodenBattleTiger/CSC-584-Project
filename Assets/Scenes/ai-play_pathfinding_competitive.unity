@@ -755,7 +755,7 @@ MonoBehaviour:
   stageText: {fileID: 1407704569}
   player1Info: {fileID: 1476046254}
   player2Info: {fileID: 1651665421}
-  popup: {fileID: 0}
+  popup: {fileID: 7004183232194309785, guid: 829ba83d2cca5a749984a560df763851, type: 3}
   continueButton: {fileID: 801793135}
 --- !u!4 &433717854
 Transform:
