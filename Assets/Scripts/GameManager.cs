@@ -588,48 +588,57 @@ public class GameManager : MonoBehaviour
         {
             rbAgent.currentTurn++;
 
-            if (boostsRemaining[currentTurn] > 0)
+            try
             {
-                (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX, tileGrid.endY, tileGrid.endX, boostsRemaining[currentTurn],
-                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
-
-                UnityEngine.Debug.Log(boostLocation);
-
-                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
-                tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
-            }
-
-            if (tilesRemaining[currentTurn] > 1)
-            {
-                (int, int) wallLocation = rbAgent.PlaceObstacle(tileGrid, tilesRemaining[currentTurn],
-                    tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
-
-                UnityEngine.Debug.Log(wallLocation);
-
-                tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
-
-                if (wallLocation.Item2 + 1 >= 0 && wallLocation.Item2 <= 14)
+                if (boostsRemaining[currentTurn] > 0)
                 {
-                    tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
+                    (int, int) boostLocation = rbAgent.PlaceBoost(tileGrid, tileGrid.startY, tileGrid.startX,
+                        tileGrid.endY, tileGrid.endX, boostsRemaining[currentTurn],
+                        tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                    UnityEngine.Debug.Log(boostLocation);
+
+                    tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1);
+                    tileButtonHandler.OnButtonPress(boostLocation.Item2, boostLocation.Item1); //press twice for boost
                 }
 
-                if (wallLocation.Item2 - 1 >= 0 && wallLocation.Item2 <= 14)
+                if (tilesRemaining[currentTurn] > 1)
                 {
-                    tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+                    (int, int) wallLocation = rbAgent.PlaceObstacle(tileGrid, tilesRemaining[currentTurn],
+                        tileGrid.GetPath(tileGrid.start, tileGrid.end, PathFinder.FindPath_AStar));
+
+                    UnityEngine.Debug.Log(wallLocation);
+
+                    tileButtonHandler.OnButtonPress(wallLocation.Item2, wallLocation.Item1);
+
+                    if (wallLocation.Item2 + 1 >= 0 && wallLocation.Item2 <= 14)
+                    {
+                        tileButtonHandler.OnButtonPress(wallLocation.Item2 + 1, wallLocation.Item1);
+                    }
+
+                    if (wallLocation.Item2 - 1 >= 0 && wallLocation.Item2 <= 14)
+                    {
+                        tileButtonHandler.OnButtonPress(wallLocation.Item2 - 1, wallLocation.Item1);
+                    }
+
                 }
-                
-            }
 
-            if (rbAgent.currentTurn == 3)
+                if (rbAgent.currentTurn == 3)
+                {
+                    playersFinishedEditing[currentTurn] = true;
+                }
+
+                // if (boostsRemaining[currentTurn] <= 0 && tilesRemaining[currentTurn] <= 1)
+                //     playersFinishedEditing[currentTurn] = true;
+
+
+                nonUINextTurn();
+
+            }
+            catch (ArgumentOutOfRangeException)
             {
-                playersFinishedEditing[currentTurn] = true;
+                skipRun();
             }
-            
-            // if (boostsRemaining[currentTurn] <= 0 && tilesRemaining[currentTurn] <= 1)
-            //     playersFinishedEditing[currentTurn] = true;
-
-
-            nonUINextTurn();
         }
     }
 

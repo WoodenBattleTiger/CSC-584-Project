@@ -53,6 +53,7 @@ public class RBAgent : MonoBehaviour
         //since the boost placement will want to place one boost for the first three turns, the RB agent can place only 3 obstacles for those turns
 
         //pick a random tile from the opponents path and block it
+        
         (int, int) tileToBlock = GetTileFromPath(opponentPath);
 
         return tileToBlock;
